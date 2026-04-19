@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>ADMIN PANEL</h2>
+
+<div class="card">
+<h3>Add Stock</h3>
+<select id="game">
+<option>MLBB</option>
+<option>CODM</option>
+<option>Roblox</option>
+</select><br>
+<input id="user" placeholder="Username">
+<input id="pass" placeholder="Password">
+<button onclick="addStock()">Add</button>
+</div>
+
+<div class="card">
+<h3>Add Coins</h3>
+<input id="uid">
+<input id="coins">
+<button onclick="addCoins()">Add</button>
+</div>
+
+<div class="card">
+<h3>Deposits</h3>
+<div id="list"></div>
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
