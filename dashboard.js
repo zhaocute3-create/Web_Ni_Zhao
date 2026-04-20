@@ -1,50 +1,62 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, addDoc, collection }
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyATT-pyHuOBD9_lD9ee9i0XR0H6YHFJXrI",
-  authDomain: "webnizhao.firebaseapp.com",
-  projectId: "webnizhao",
-  storageBucket: "webnizhao.firebasestorage.app",
-  messagingSenderId: "562185836577",
-  appId: "1:562185836577:web:ce563d59c0b81d02b06b60"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-let user;
-
-function toast(t){
-  toast.innerText=t;
-  toast.style.display="block";
-  setTimeout(()=>toast.style.display="none",2000);
-}
-
-onAuthStateChanged(auth,async u=>{
- if(!u){location="index.html";return;}
- user=u;
-
- const snap=await getDoc(doc(db,"users",u.uid));
- uid.innerText=snap.data().uid;
- bal.innerText=snap.data().balance;
+const app=initializeApp({
+ apiKey:"PASTE_API_KEY",
+ projectId:"YOUR_PROJECT"
 });
 
-window.openDep=()=>deposit.style.display="block";
+const db=getFirestore(app);
 
-window.submitDep=async()=>{
- toast("Submitting...");
+let currentKey=null;
 
- await addDoc(collection(db,"deposits"),{
-   userId:user.uid,
-   amount:Number(amount.value),
-   ref:ref.value,
-   status:"pending"
+function toast(t){
+ toast.innerText=t;
+ toast.style.display="block";
+ setTimeout(()=>toast.style.display="none",2000);
+}
+
+// CHECK KEY
+window.checkKey=async()=>{
+ const q=await getDocs(collection(db,"keys"));
+ let valid=false;
+
+ q.forEach(d=>{
+   if(d.id==key.value && !d.data().used){
+     valid=true;
+     currentKey=d.id;
+   }
  });
 
- toast("Submitted!");
+ if(valid){
+   toast("Key Valid!");
+   genBox.style.display="block";
+ }else{
+   toast("Invalid Key");
+ }
+};
+
+// GENERATE
+window.generate=async()=>{
+ const q=await getDocs(collection(db,"stocks"));
+ let found=null;
+
+ q.forEach(d=>{
+   if(!d.data().used && d.data().game==game.value && !found){
+     found={id:d.id,...d.data()};
+   }
+ });
+
+ if(!found){
+   toast("No stock!");
+   return;
+ }
+
+ result.innerText = found.username + " | " + found.password;
+
+ await updateDoc(doc(db,"stocks",found.id),{used:true});
+ await updateDoc(doc(db,"keys",currentKey),{used:true});
+
+ toast("Generated!");
 };
