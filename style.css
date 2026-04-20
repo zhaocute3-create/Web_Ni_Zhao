@@ -1,15 +1,17 @@
 body{
-  background:#0b1220;
-  color:white;
-  font-family:sans-serif;
+  background:#020617;
+  color:#00ffcc;
+  font-family:monospace;
   text-align:center;
 }
 
 .card{
-  background:#111827;
+  background:#0f172a;
+  border:1px solid #00ffcc;
   padding:20px;
   margin:15px;
   border-radius:12px;
+  box-shadow:0 0 10px #00ffcc;
 }
 
 input,select{
@@ -17,6 +19,9 @@ input,select{
   margin:5px;
   border-radius:8px;
   border:none;
+  background:#020617;
+  color:#00ffcc;
+  border:1px solid #00ffcc;
 }
 
 button{
@@ -25,7 +30,8 @@ button{
   border:none;
   border-radius:8px;
   background:#00ffcc;
-  cursor:pointer;
+  color:black;
+  font-weight:bold;
 }
 
 #toast{
