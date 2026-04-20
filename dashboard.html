@@ -6,21 +6,23 @@
 <body>
 
 <div class="card">
-<h2>UID: <span id="uid"></span></h2>
-<h3>Balance: <span id="bal"></span></h3>
+<h2>Dashboard</h2>
+
+<select id="game">
+<option>MLBB</option>
+<option>CODM</option>
+<option>Roblox</option>
+</select><br>
+
+<input id="key" placeholder="Access Key"><br>
+
+<button onclick="checkKey()">Access Key</button>
+
+<div id="genBox" style="display:none;">
+<button onclick="generate()">GENERATE ACCOUNT</button>
 </div>
 
-<div class="card">
-<button onclick="openDep()">Deposit</button>
-</div>
-
-<div id="deposit" style="display:none;" class="card">
-<h3>Deposit</h3>
-<p>MOP: 09753048649</p>
-<input id="amount" placeholder="Amount"><br>
-<input id="ref" placeholder="Reference"><br>
-
-<button onclick="submitDep()">Submit</button>
+<p id="result"></p>
 </div>
 
 <div id="toast"></div>
