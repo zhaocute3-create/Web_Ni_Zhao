@@ -1,19 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc }
+import { getFirestore, doc, setDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyATT-pyHuOBD9_lD9ee9i0XR0H6YHFJXrI",
-  authDomain: "webnizhao.firebaseapp.com",
-  projectId: "webnizhao",
-  storageBucket: "webnizhao.firebasestorage.app",
-  messagingSenderId: "562185836577",
-  appId: "1:562185836577:web:ce563d59c0b81d02b06b60"
-};
+const app = initializeApp({
+  apiKey:"PASTE_API_KEY",
+  authDomain:"YOUR_PROJECT.firebaseapp.com",
+  projectId:"YOUR_PROJECT"
+});
 
-const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
@@ -26,20 +22,9 @@ function toast(t){
 window.register=async()=>{
  try{
    const res=await createUserWithEmailAndPassword(auth,email.value,pass.value);
-   const user=res.user;
 
-   const ref=doc(db,"meta","counter");
-   const snap=await getDoc(ref);
-
-   let uid=1;
-   if(snap.exists()) uid=snap.data().count+1;
-
-   await setDoc(ref,{count:uid});
-
-   await setDoc(doc(db,"users",user.uid),{
-     email:user.email,
-     uid:uid,
-     balance:0
+   await setDoc(doc(db,"users",res.user.uid),{
+     email:email.value
    });
 
    toast("Registered!");
