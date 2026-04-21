@@ -5,9 +5,9 @@ import { getFirestore, doc, setDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app = initializeApp({
-  apiKey:"PASTE_API_KEY",
-  authDomain:"YOUR_PROJECT.firebaseapp.com",
-  projectId:"YOUR_PROJECT"
+  apiKey:"AIzaSyATT-pyHuOBD9_lD9ee9i0XR0H6YHFJXrI",
+  authDomain:"webnizhao.firebaseapp.com",
+  projectId:"webnizhao"
 });
 
 const auth=getAuth(app);
