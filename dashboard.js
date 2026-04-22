@@ -63,7 +63,10 @@ window.loadShop = async ()=>{
    html += `
    <div class="card">
 
-   <img src="${x.image || 'https://via.placeholder.com/300'}" width="100%">
+   ${x.image && x.image.startsWith("data:image") 
+  ? `<img src="${x.image}" width="100%" style="border-radius:10px;">`
+  : `<img src="https://via.placeholder.com/300x150?text=No+Image" width="100%" style="border-radius:10px;">`
+   }
 
    <h3>${x.game}</h3>
    <p>📅 ${x.inactive || "N/A"}</p>
