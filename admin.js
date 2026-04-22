@@ -3,6 +3,26 @@ import {
 doc, setDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// 📸 IMAGE PREVIEW + CONVERT
+let base64Image = "";
+
+document.getElementById("imageFile")?.addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(){
+    base64Image = reader.result;
+
+    let preview = document.getElementById("preview");
+    preview.src = base64Image;
+    preview.style.display = "block";
+  };
+
+  reader.readAsDataURL(file);
+});
+
 // 🔑 CREATE KEY (ANTI DUPLICATE + ONE TIME USE)
 window.createKey = async ()=>{
  try{
