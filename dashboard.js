@@ -27,26 +27,46 @@ async function loadBalance(){
 window.checkKey = async ()=>{
  const k = key.value;
 
- if(!k){ showToast("Enter key"); return; }
+ if(!k){
+   showToast("❌ Enter key");
+   return;
+ }
 
  const ref = doc(db,"keys",k);
  const snap = await getDoc(ref);
 
  if(!snap.exists() || snap.data().used){
-   showToast("Invalid key");
+   showToast("❌ Invalid key");
+   return;
+ }
+
+ // 🔐 EXPIRATION (24h)
+ const now = Date.now();
+ const created = snap.data().createdAt || now;
+
+ if(now - created > 86400000){
+   showToast("❌ Key expired");
    return;
  }
 
  const coins = snap.data().coins;
 
+ // SAVE KEY DATA
+ currentKey = k;
+ userKeyType = snap.data().type || "";
+
+ // ADD BALANCE
  await updateDoc(doc(db,"users",currentUser.uid),{
    balance: increment(coins)
  });
 
+ // MARK USED
  await updateDoc(ref,{used:true});
 
- showToast("+"+coins+" coins");
+ showToast("💰 +" + coins + " coins");
+
  loadBalance();
+ loadShop(); // refresh filtered shop
 };
 
 // GENERATE
