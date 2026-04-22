@@ -1,3 +1,5 @@
+let currentKey = "";
+let userKeyType = "";
 import { auth, db } from "./firebase.js";
 import {
 collection, getDocs, doc, getDoc, updateDoc,
