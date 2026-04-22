@@ -101,6 +101,16 @@ button:hover{
 
 <p id="toast"></p>
 
+<script type="module">
+import { auth } from "./firebase.js";
+
+auth.onAuthStateChanged(user=>{
+  if(!user || user.email !== "jhonlouiebaid92@gmail.com"){
+    document.body.innerHTML = "<h2 style='color:red;text-align:center;'>ACCESS DENIED</h2>";
+  }
+});
+</script>
+
 <script type="module" src="admin.js"></script>
 </body>
 </html>
