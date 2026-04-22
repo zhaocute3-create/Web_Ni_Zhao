@@ -1,13 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
 
-<h2>ADMIN PANEL</h2>
+<body style="background:#0b1220;color:white;text-align:center;">
 
-<div class="card">
+<h2>🔥 ZHAO ULTRA ADMIN V2 🔥</h2>
+
+<!-- Earnings -->
+<div>
+<h3>Total Earnings</h3>
+<p id="totalEarn">₱0</p>
+</div>
+
+<!-- Daily Chart -->
+<div>
+<h3>📊 Daily Earnings</h3>
+<canvas id="dailyChart"></canvas>
+</div>
+
+<!-- Game Chart -->
+<div>
+<h3>🎮 Game Stats</h3>
+<canvas id="chart"></canvas>
+</div>
+
+<!-- Leaderboard -->
+<div>
+<h3>👤 Top Users</h3>
+<div id="leaderboard"></div>
+</div>
+
+<!-- Stock Counter -->
+<div>
+<h3>📦 Stock Count</h3>
+<div id="stocks"></div>
+</div>
+
+<!-- Logs -->
+<div>
+<h3>📜 Logs</h3>
+<div id="logs"></div>
+</div>
+
+<!-- Add Stock -->
+<div>
 <h3>Add Stock</h3>
 <select id="game">
 <option>MLBB</option>
@@ -19,17 +57,15 @@
 <button onclick="addStock()">Add</button>
 </div>
 
-<div class="card">
-<h3>Generate Key</h3>
+<!-- Keys -->
+<div>
+<h3>Keys</h3>
 <input id="newKey">
 <button onclick="genKey()">Create</button>
-</div>
-
-<div class="card">
-<h3>Keys List</h3>
 <div id="keys"></div>
 </div>
 
 <script type="module" src="admin.js"></script>
+
 </body>
 </html>
