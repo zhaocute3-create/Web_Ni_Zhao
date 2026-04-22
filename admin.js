@@ -6,16 +6,29 @@ window.addStock = async ()=>{
 
   let id = Date.now().toString();
 
-  await setDoc(doc(db,"stocks",id),{
-    game: game.value,
-    price: Number(price.value),
-    username: username.value,
-    password: password.value,
+  // SAFE GET VALUES
+  let gameVal = document.getElementById("game")?.value;
+  let userVal = document.getElementById("username")?.value;
+  let passVal = document.getElementById("password")?.value;
+  let priceVal = document.getElementById("price")?.value;
 
-    // SAFE ADD FIELDS
-    inactive: inactive?.value || "N/A",
-    bind: bind?.value || "Unknown",
-    image: image?.value || "",
+  let inactiveVal = document.getElementById("inactive")?.value;
+  let bindVal = document.getElementById("bind")?.value;
+  let imageVal = document.getElementById("image")?.value;
+
+  if(!userVal || !passVal || !priceVal){
+    return alert("Fill all required fields!");
+  }
+
+  await setDoc(doc(db,"stocks",id),{
+    game: gameVal,
+    price: Number(priceVal),
+    username: userVal,
+    password: passVal,
+
+    inactive: inactiveVal || "N/A",
+    bind: bindVal || "Unknown",
+    image: imageVal || "",
 
     used:false
   });
