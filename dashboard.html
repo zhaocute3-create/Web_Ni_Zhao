@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#0b1220;color:#00ffcc;text-align:center;">
+<head>
+<style>
+body{background:#0b1220;color:#00ffcc;text-align:center;}
+.card{border:1px solid #00ffcc;margin:10px;padding:10px;border-radius:10px;}
+</style>
+</head>
 
-<h2>Dashboard</h2>
+<body>
 
-<p id="balance">Balance: 0</p>
+<h2>ZHAO SHOP</h2>
 
-<input id="key" placeholder="Enter Key">
+<p id="balance"></p>
+
+<input id="key">
 <button onclick="checkKey()">Use Key</button>
 
-<br><br>
+<div id="shop"></div>
 
-<select id="game">
-<option>MLBB</option>
-<option>CODM</option>
-<option>Roblox</option>
-</select>
+<div id="popup"></div>
 
-<button onclick="generate()">Generate</button>
+<div id="loading" style="display:none;">Processing...</div>
 
-<p id="result"></p>
-<p id="toast"></p>
-
+<script type="module" src="core_fix.js"></script>
 <script type="module" src="dashboard.js"></script>
+
 </body>
 </html>
