@@ -1,33 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>ZHAO ADMIN</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+ background:#0b1220;
+ color:#00ffcc;
+ font-family:sans-serif;
+ text-align:center;
+}
+
+.card{
+ border:1px solid #00ffcc;
+ margin:15px;
+ padding:15px;
+ border-radius:15px;
+ box-shadow:0 0 20px #00ffcc33;
+}
+
+input,select,button{
+ padding:10px;
+ margin:5px;
+ border-radius:10px;
+ border:1px solid #00ffcc;
+ background:#0b1220;
+ color:#00ffcc;
+}
+
+button{
+ cursor:pointer;
+ box-shadow:0 0 10px #00ffcc;
+ transition:0.3s;
+}
+button:hover{
+ transform:scale(1.05);
+ box-shadow:0 0 20px #00ffcc;
+}
+
+#toast{
+ position:fixed;
+ bottom:20px;
+ left:50%;
+ transform:translateX(-50%);
+ background:#00ffcc;
+ color:black;
+ padding:10px;
+ border-radius:10px;
+ opacity:0;
+ transition:0.3s;
+}
+</style>
 </head>
-<body style="background:#0b1220;color:white;text-align:center;">
 
-<h2>ADMIN PANEL</h2>
+<body>
 
-<p id="totalEarn"></p>
-<canvas id="chart"></canvas>
-<canvas id="dailyChart"></canvas>
+<h2>🔥 ZHAO ADMIN PANEL 🔥</h2>
 
-<div id="leaderboard"></div>
-<div id="stocks"></div>
-<div id="logs"></div>
-
-<input id="newKey">
+<div class="card">
+<h3>🔑 Create Key</h3>
+<input id="newKey" placeholder="Key">
+<input id="coins" placeholder="Coins">
 <button onclick="genKey()">Create Key</button>
+</div>
 
-<input id="user">
-<input id="pass">
+<div class="card">
+<h3>📦 Add Stock</h3>
 <select id="game">
 <option>MLBB</option>
 <option>CODM</option>
 <option>Roblox</option>
-</select>
-<button onclick="addStock()">Add</button>
+</select><br>
+<input id="user" placeholder="Username">
+<input id="pass" placeholder="Password">
+<input id="price" placeholder="Price">
+<button onclick="addStock()">Add Stock</button>
+</div>
 
-<div id="keys"></div>
+<div class="card">
+<h3>📊 Stats</h3>
+<p id="totalStocks"></p>
+<p id="totalKeys"></p>
+</div>
+
+<div class="card">
+<h3>📜 Logs</h3>
+<div id="logs"></div>
+</div>
+
+<p id="toast"></p>
 
 <script type="module" src="admin.js"></script>
 </body>
