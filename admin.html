@@ -3,69 +3,32 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body style="background:#0b1220;color:white;text-align:center;">
 
-<h2>🔥 ZHAO ULTRA ADMIN V2 🔥</h2>
+<h2>ADMIN PANEL</h2>
 
-<!-- Earnings -->
-<div>
-<h3>Total Earnings</h3>
-<p id="totalEarn">₱0</p>
-</div>
-
-<!-- Daily Chart -->
-<div>
-<h3>📊 Daily Earnings</h3>
-<canvas id="dailyChart"></canvas>
-</div>
-
-<!-- Game Chart -->
-<div>
-<h3>🎮 Game Stats</h3>
+<p id="totalEarn"></p>
 <canvas id="chart"></canvas>
-</div>
+<canvas id="dailyChart"></canvas>
 
-<!-- Leaderboard -->
-<div>
-<h3>👤 Top Users</h3>
 <div id="leaderboard"></div>
-</div>
-
-<!-- Stock Counter -->
-<div>
-<h3>📦 Stock Count</h3>
 <div id="stocks"></div>
-</div>
-
-<!-- Logs -->
-<div>
-<h3>📜 Logs</h3>
 <div id="logs"></div>
-</div>
 
-<!-- Add Stock -->
-<div>
-<h3>Add Stock</h3>
+<input id="newKey">
+<button onclick="genKey()">Create Key</button>
+
+<input id="user">
+<input id="pass">
 <select id="game">
 <option>MLBB</option>
 <option>CODM</option>
 <option>Roblox</option>
-</select><br>
-<input id="user" placeholder="Username">
-<input id="pass" placeholder="Password">
+</select>
 <button onclick="addStock()">Add</button>
-</div>
 
-<!-- Keys -->
-<div>
-<h3>Keys</h3>
-<input id="newKey">
-<button onclick="genKey()">Create</button>
 <div id="keys"></div>
-</div>
 
 <script type="module" src="admin.js"></script>
-
 </body>
 </html>
