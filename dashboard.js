@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase.js";
 import {
-collection, getDocs, doc, getDoc, updateDoc, increment
+collection, getDocs, doc, getDoc, updateDoc, increment, addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let currentUser;
@@ -14,27 +14,18 @@ auth.onAuthStateChanged(async(user)=>{
 
 async function loadBalance(){
  const snap = await getDoc(doc(db,"users",currentUser.uid));
- balance.innerText = "Balance: " + (snap.data().balance || 0);
+ balance.innerText = "Balance: " + (snap.data()?.balance || 0);
 }
 
+// 🔐 KEY SYSTEM
 window.checkKey = async ()=>{
  try{
-
  const k = key.value;
- if(!k) return alert("Enter key");
-
  const ref = doc(db,"keys",k);
  const snap = await getDoc(ref);
 
  if(!snap.exists()) return alert("Invalid key");
-
- if(snap.data().used) return alert("❌ Key already used");
-
- if(!coreCheckExpire(snap.data())){
-   return alert("❌ Key expired");
- }
-
- coreSaveKey(k, snap.data());
+ if(snap.data().used) return alert("Used key");
 
  await updateDoc(doc(db,"users",currentUser.uid),{
    balance: increment(snap.data().coins)
@@ -42,17 +33,16 @@ window.checkKey = async ()=>{
 
  await updateDoc(ref,{used:true});
 
- alert("✅ Coins Added!");
-
+ alert("Coins added!");
  loadBalance();
- loadShop();
 
- }catch(e){
-  coreError(e);
- }
+ }catch(e){ alert(e.message); }
 };
 
-async function loadShop(){
+// 🛒 LOAD SHOP
+window.loadShop = async ()=>{
+ let keyword = document.getElementById("search")?.value?.toLowerCase() || "";
+
  const q = await getDocs(collection(db,"stocks"));
  let html="";
 
@@ -60,54 +50,64 @@ async function loadShop(){
    let x=d.data();
 
    if(x.used) return;
-
-   if(CORE.type && x.game !== CORE.type) return;
+   if(keyword && !x.game.toLowerCase().includes(keyword)) return;
 
    html += `
    <div class="card">
-   <img src="${x.image || ''}">
+
+   ${x.image ? `<img src="${x.image}" width="100%">` : ""}
+
    <h3>${x.game}</h3>
-   <p>Inactive: ${x.inactive}</p>
-   <p>Bind: ${x.bind}</p>
-   <p>Price: ${x.price}</p>
+   <p>📅 ${x.inactive || "N/A"}</p>
+   <p>🔗 ${x.bind || "Unknown"}</p>
+   <p>💰 ${x.price}</p>
+
    <button onclick="buy('${d.id}')">BUY</button>
+
    </div>
    `;
  });
 
  shop.innerHTML = html;
-}
+};
 
+// 💰 BUY SYSTEM
 window.buy = async(id)=>{
  try{
 
- coreLoad(true);
+ loading.style.display="block";
 
  const userRef = doc(db,"users",currentUser.uid);
  const userSnap = await getDoc(userRef);
- let bal = userSnap.data().balance || 0;
+
+ let bal = userSnap.data()?.balance || 0;
 
  const stockRef = doc(db,"stocks",id);
  const stockSnap = await getDoc(stockRef);
  let data = stockSnap.data();
 
  if(bal < data.price){
-   coreLoad(false);
+   loading.style.display="none";
    return alert("Not enough coins");
  }
 
- await updateDoc(userRef,{
-   balance: bal - data.price
- });
-
+ await updateDoc(userRef,{balance: bal - data.price});
  await updateDoc(stockRef,{used:true});
 
- await coreTrack(currentUser,data);
+ await addDoc(collection(db,"purchases"),{
+   user: currentUser.email,
+   account: data.username + "|" + data.password,
+   price: data.price,
+   date: Date.now()
+ });
 
- coreLoad(false);
+ loading.style.display="none";
 
  popup.style.display="block";
- popup.innerHTML = `<h3>Thank you!</h3><p>${data.username} | ${data.password}</p>`;
+ popup.innerHTML = `
+ <h3>✅ Thank you!</h3>
+ <p>${data.username} | ${data.password}</p>
+ `;
 
  setTimeout(()=> popup.style.display="none",4000);
 
@@ -115,7 +115,7 @@ window.buy = async(id)=>{
  loadShop();
 
  }catch(e){
-  coreLoad(false);
-  coreError(e);
+ loading.style.display="none";
+ alert(e.message);
  }
 };
