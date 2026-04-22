@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#0b1220;color:white;text-align:center;">
+<body style="background:#0b1220;color:#00ffcc;text-align:center;">
 
 <h2>Dashboard</h2>
 
-<input id="key" placeholder="Enter Key"><br>
-<button onclick="checkKey()">Check Key</button>
+<p id="balance">Balance: 0</p>
 
-<div id="genBox" style="display:none;">
+<input id="key" placeholder="Enter Key">
+<button onclick="checkKey()">Use Key</button>
+
+<br><br>
+
 <select id="game">
 <option>MLBB</option>
 <option>CODM</option>
 <option>Roblox</option>
-</select><br>
+</select>
 
 <button onclick="generate()">Generate</button>
-</div>
 
 <p id="result"></p>
 <p id="toast"></p>
