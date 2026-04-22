@@ -72,7 +72,7 @@ window.addStock = async ()=>{
 
   let inactive = document.getElementById("inactive")?.value;
   let bind = document.getElementById("bind")?.value;
-  let image = document.getElementById("image")?.value;
+  let image = base64Image || "";
 
   if(!game || !username || !password || !price){
     return alert("Fill all fields!");
