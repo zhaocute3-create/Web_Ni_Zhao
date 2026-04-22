@@ -1,45 +1,50 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { auth, db } from "./firebase.js";
+import {
+collection, getDocs, doc, getDoc, updateDoc, addDoc, serverTimestamp, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const app=initializeApp({
- apiKey:"AIzaSyATT-pyHuOBD9_lD9ee9i0XR0H6YHFJXrI",
- projectId:"webnizhao"
-});
-
-const db=getFirestore(app);
+function showToast(t){
+ toast.innerText=t;
+}
 
 let currentKey=null;
 
-function toast(t){
- toast.innerText=t;
- toast.style.display="block";
- setTimeout(()=>toast.style.display="none",2000);
-}
-
 // CHECK KEY
-window.checkKey=async()=>{
- const q=await getDocs(collection(db,"keys"));
- let valid=false;
+window.checkKey = async ()=>{
+ const k = key.value;
 
- q.forEach(d=>{
-   if(d.id==key.value && !d.data().used){
-     valid=true;
-     currentKey=d.id;
-   }
- });
+ const ref = doc(db,"keys",k);
+ const snap = await getDoc(ref);
 
- if(valid){
-   toast("Key Valid!");
+ if(snap.exists() && !snap.data().used){
+   currentKey=k;
+   showToast("Valid key");
    genBox.style.display="block";
  }else{
-   toast("Invalid Key");
+   showToast("Invalid key");
  }
 };
 
 // GENERATE
-window.generate=async()=>{
- const q=await getDocs(collection(db,"stocks"));
+window.generate = async ()=>{
+ const user = auth.currentUser;
+
+ if(!user){
+   showToast("Login first");
+   return;
+ }
+
+ // ANTI ABUSE
+ const qlog = query(collection(db,"logs"),where("uid","==",user.uid));
+ const check = await getDocs(qlog);
+
+ if(check.size >= 3){
+   showToast("Limit reached");
+   return;
+ }
+
+ const q = await getDocs(collection(db,"stocks"));
+
  let found=null;
 
  q.forEach(d=>{
@@ -49,14 +54,31 @@ window.generate=async()=>{
  });
 
  if(!found){
-   toast("No stock!");
+   showToast("No stock");
    return;
  }
 
- result.innerText = found.username + " | " + found.password;
+ result.innerText = found.username+" | "+found.password;
 
  await updateDoc(doc(db,"stocks",found.id),{used:true});
  await updateDoc(doc(db,"keys",currentKey),{used:true});
 
- toast("Generated!");
+ // LOG
+ await addDoc(collection(db,"logs"),{
+   uid:user.uid,
+   email:user.email,
+   game:game.value,
+   username:found.username,
+   keyUsed:currentKey,
+   createdAt:serverTimestamp()
+ });
+
+ // EARNINGS
+ await addDoc(collection(db,"earnings"),{
+   uid:user.uid,
+   amount:100,
+   createdAt:serverTimestamp()
+ });
+
+ showToast("Generated!");
 };
