@@ -1,51 +1,65 @@
-// 🔐 ADMIN ACCESS GUARD (ADD THIS AT TOP)
-import { auth } from "./firebase.js";
+import { db, auth } from "./firebase.js";
+import {
+doc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-auth.onAuthStateChanged((user)=>{
-  if(!user){
-    alert("Login first");
-    location = "index.html";
-    return;
-  }
-
-  if(user.email !== "jhonlouiebaid92@gmail.com"){
-    alert("❌ Access Denied");
+// 🔐 ADMIN GUARD
+auth.onAuthStateChanged(user=>{
+  if(!user || user.email !== "jhonlouiebaid92@gmail.com"){
+    alert("Access Denied");
     location = "dashboard.html";
-    return;
   }
-
-  console.log("✅ Admin verified:", user.email);
 });
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// 🔑 CREATE KEY (FIXED)
+window.createKey = async ()=>{
+ try{
+
+  let key = "ZHAO-" + Math.random().toString(36).substring(2,8).toUpperCase();
+
+  await setDoc(doc(db,"keys",key),{
+    coins: 100,
+    used:false,
+    created: Date.now()
+  });
+
+  alert("✅ Key Created: " + key);
+
+ }catch(e){
+  alert("Key Error: " + e.message);
+ }
+};
+
+// 📦 ADD STOCK (FIXED IMAGE + FIELDS)
 window.addStock = async ()=>{
  try{
 
   let id = Date.now().toString();
 
-  // SAFE GET VALUES
-  let gameVal = document.getElementById("game")?.value;
-  let userVal = document.getElementById("username")?.value;
-  let passVal = document.getElementById("password")?.value;
-  let priceVal = document.getElementById("price")?.value;
+  let game = document.getElementById("game").value;
+  let username = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
+  let price = document.getElementById("price").value;
 
-  let inactiveVal = document.getElementById("inactive")?.value;
-  let bindVal = document.getElementById("bind")?.value;
-  let imageVal = document.getElementById("image")?.value;
+  let inactive = document.getElementById("inactive")?.value;
+  let bind = document.getElementById("bind")?.value;
+  let image = document.getElementById("image")?.value;
 
-  if(!userVal || !passVal || !priceVal){
-    return alert("Fill all required fields!");
+  if(!game || !username || !password || !price){
+    return alert("Fill all fields!");
   }
 
   await setDoc(doc(db,"stocks",id),{
-    game: gameVal,
-    price: Number(priceVal),
-    username: userVal,
-    password: passVal,
+    game: game,
+    username: username,
+    password: password,
+    price: Number(price),
 
-    inactive: inactiveVal || "N/A",
-    bind: bindVal || "Unknown",
-    image: imageVal || "",
+    inactive: inactive || "N/A",
+    bind: bind || "Unknown",
+
+    // 🔥 FIX IMAGE
+    image: image?.startsWith("http") ? image : "",
 
     used:false
   });
@@ -53,6 +67,6 @@ window.addStock = async ()=>{
   alert("✅ Stock Added");
 
  }catch(e){
-  alert(e.message);
+  alert("Stock Error: " + e.message);
  }
 };
