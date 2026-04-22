@@ -58,19 +58,20 @@ button:hover{
 
 <h2>🔥 ZHAO ADMIN PANEL 🔥</h2>
 
+<!-- 🔑 CREATE KEY -->
 <div class="card">
 <h3>🔑 Create Key</h3>
-<input id="newKey" placeholder="Key">
-<input id="coins" placeholder="Coins">
-<button onclick="genKey()">Create Key</button>
+
+<input id="keyInput" placeholder="Enter Key">
+<input id="coinsInput" type="number" placeholder="Coins">
+
+<button onclick="createKey()">Create Key</button>
 </div>
 
+<!-- 📦 ADD STOCK -->
 <div class="card">
 <h3>📦 Add Stock</h3>
-<select id="game">
-<option>MLBB</option>
-<option>CODM</option>
-<option>Roblox</option>
+
 <select id="game">
   <option value="MLBB">MLBB</option>
   <option value="CODM">CODM</option>
@@ -79,7 +80,7 @@ button:hover{
 
 <input id="username" placeholder="Username">
 <input id="password" placeholder="Password">
-<input id="price" placeholder="Price">
+<input id="price" type="number" placeholder="Price">
 
 <input id="inactive" placeholder="Inactive days">
 <input id="bind" placeholder="Bind">
@@ -88,12 +89,14 @@ button:hover{
 <button onclick="addStock()">Add Stock</button>
 </div>
 
+<!-- 📊 STATS -->
 <div class="card">
 <h3>📊 Stats</h3>
-<p id="totalStocks"></p>
-<p id="totalKeys"></p>
+<p id="totalStocks">Total Stocks: 0</p>
+<p id="totalKeys">Total Keys: 0</p>
 </div>
 
+<!-- 📜 LOGS -->
 <div class="card">
 <h3>📜 Logs</h3>
 <div id="logs"></div>
@@ -101,6 +104,7 @@ button:hover{
 
 <p id="toast"></p>
 
+<!-- 🔐 ADMIN SECURITY -->
 <script type="module">
 import { auth } from "./firebase.js";
 
@@ -112,5 +116,6 @@ auth.onAuthStateChanged(user=>{
 </script>
 
 <script type="module" src="admin.js"></script>
+
 </body>
 </html>
