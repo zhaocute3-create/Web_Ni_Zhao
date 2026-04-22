@@ -83,6 +83,7 @@ window.addStock = async ()=>{
     username: username,
     password: password,
     price: Number(price),
+    image: image,
 
     inactive: inactive || "N/A",
     bind: bind || "Unknown",
