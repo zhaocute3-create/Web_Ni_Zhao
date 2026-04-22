@@ -37,9 +37,11 @@ window.genKey = async ()=>{
 
  try{
    await setDoc(doc(db,"keys",newKey.value),{
-     coins:Number(coins.value),
-     used:false
-   });
+ coins:Number(coins.value),
+ type: game.value,
+ used:false,
+ createdAt: Date.now()
+});
 
    showToast("✅ Key Created");
    loadStats();
