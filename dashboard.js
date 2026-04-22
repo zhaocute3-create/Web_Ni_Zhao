@@ -12,6 +12,15 @@ auth.onAuthStateChanged(async(user)=>{
  loadShop();
 });
 
+auth.onAuthStateChanged(user=>{
+  if(user){
+    if(user.email !== "jhonlouiebaid92@gmail.com"){
+      let btn = document.getElementById("adminBtn");
+      if(btn) btn.style.display = "none";
+    }
+  }
+});
+
 async function loadBalance(){
  const snap = await getDoc(doc(db,"users",currentUser.uid));
  balance.innerText = "Balance: " + (snap.data()?.balance || 0);
