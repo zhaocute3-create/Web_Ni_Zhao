@@ -1,4 +1,21 @@
-import { db } from "./firebase.js";
+// 🔐 ADMIN ACCESS GUARD (ADD THIS AT TOP)
+import { auth } from "./firebase.js";
+
+auth.onAuthStateChanged((user)=>{
+  if(!user){
+    alert("Login first");
+    location = "index.html";
+    return;
+  }
+
+  if(user.email !== "jhonlouiebaid92@gmail.com"){
+    alert("❌ Access Denied");
+    location = "dashboard.html";
+    return;
+  }
+
+  console.log("✅ Admin verified:", user.email);
+});
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 window.addStock = async ()=>{
