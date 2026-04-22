@@ -4,45 +4,31 @@ createUserWithEmailAndPassword,
 signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-import {
-doc, setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function showToast(t){
- toast.innerText=t;
-}
+function showToast(t){ document.getElementById("toast").innerText = t; }
 
-// REGISTER
 window.register = async ()=>{
  try{
    const res = await createUserWithEmailAndPassword(auth,email.value,pass.value);
 
    await setDoc(doc(db,"users",res.user.uid),{
      email: email.value,
-     createdAt: Date.now()
+     balance: 0
    });
 
    showToast("Registered!");
- }catch(e){
-   showToast(e.message);
- }
+ }catch(e){ showToast(e.message); }
 };
 
-// LOGIN
 window.login = async ()=>{
  try{
    const res = await signInWithEmailAndPassword(auth,email.value,pass.value);
 
-   showToast("Login success");
-
-   // 🔥 ADMIN CHECK
    if(res.user.email === "jhonlouiebaid92@gmail.com"){
-     setTimeout(()=>location="admin.html",1000);
+     location="admin.html";
    }else{
-     setTimeout(()=>location="dashboard.html",1000);
+     location="dashboard.html";
    }
-
- }catch(e){
-   showToast(e.message);
- }
+ }catch(e){ showToast(e.message); }
 };
