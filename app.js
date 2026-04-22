@@ -31,9 +31,17 @@ window.register = async ()=>{
 // LOGIN
 window.login = async ()=>{
  try{
-   await signInWithEmailAndPassword(auth,email.value,pass.value);
+   const res = await signInWithEmailAndPassword(auth,email.value,pass.value);
+
    showToast("Login success");
-   setTimeout(()=>location="dashboard.html",1000);
+
+   // 🔥 ADMIN CHECK
+   if(res.user.email === "jhonlouiebaid92@gmail.com"){
+     setTimeout(()=>location="admin.html",1000);
+   }else{
+     setTimeout(()=>location="dashboard.html",1000);
+   }
+
  }catch(e){
    showToast(e.message);
  }
