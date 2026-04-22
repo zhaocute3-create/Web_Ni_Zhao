@@ -1,50 +1,59 @@
 import { auth, db } from "./firebase.js";
 import {
-collection, getDocs, doc, getDoc, updateDoc, addDoc, serverTimestamp, query, where
+collection, getDocs, doc, getDoc, updateDoc,
+increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function showToast(t){
- toast.innerText=t;
+function showToast(t){ toast.innerText=t; }
+
+let currentUser;
+
+// LOAD USER
+auth.onAuthStateChanged(async(user)=>{
+ if(!user){ location="index.html"; return; }
+ currentUser=user;
+ loadBalance();
+});
+
+// LOAD BALANCE
+async function loadBalance(){
+ const snap = await getDoc(doc(db,"users",currentUser.uid));
+ balance.innerText = "Balance: " + (snap.data().balance || 0);
 }
 
-let currentKey=null;
-
-// CHECK KEY
+// USE KEY
 window.checkKey = async ()=>{
  const k = key.value;
+
+ if(!k){ showToast("Enter key"); return; }
 
  const ref = doc(db,"keys",k);
  const snap = await getDoc(ref);
 
- if(snap.exists() && !snap.data().used){
-   currentKey=k;
-   showToast("Valid key");
-   genBox.style.display="block";
- }else{
+ if(!snap.exists() || snap.data().used){
    showToast("Invalid key");
+   return;
  }
+
+ const coins = snap.data().coins;
+
+ await updateDoc(doc(db,"users",currentUser.uid),{
+   balance: increment(coins)
+ });
+
+ await updateDoc(ref,{used:true});
+
+ showToast("+"+coins+" coins");
+ loadBalance();
 };
 
 // GENERATE
 window.generate = async ()=>{
- const user = auth.currentUser;
-
- if(!user){
-   showToast("Login first");
-   return;
- }
-
- // ANTI ABUSE
- const qlog = query(collection(db,"logs"),where("uid","==",user.uid));
- const check = await getDocs(qlog);
-
- if(check.size >= 3){
-   showToast("Limit reached");
-   return;
- }
+ const userRef = doc(db,"users",currentUser.uid);
+ const userSnap = await getDoc(userRef);
+ let bal = userSnap.data().balance || 0;
 
  const q = await getDocs(collection(db,"stocks"));
-
  let found=null;
 
  q.forEach(d=>{
@@ -53,32 +62,18 @@ window.generate = async ()=>{
    }
  });
 
- if(!found){
-   showToast("No stock");
+ if(!found){ showToast("No stock"); return; }
+
+ if(bal < found.price){
+   showToast("Not enough coins");
    return;
  }
 
  result.innerText = found.username+" | "+found.password;
 
+ await updateDoc(userRef,{balance: bal - found.price});
  await updateDoc(doc(db,"stocks",found.id),{used:true});
- await updateDoc(doc(db,"keys",currentKey),{used:true});
-
- // LOG
- await addDoc(collection(db,"logs"),{
-   uid:user.uid,
-   email:user.email,
-   game:game.value,
-   username:found.username,
-   keyUsed:currentKey,
-   createdAt:serverTimestamp()
- });
-
- // EARNINGS
- await addDoc(collection(db,"earnings"),{
-   uid:user.uid,
-   amount:100,
-   createdAt:serverTimestamp()
- });
 
  showToast("Generated!");
+ loadBalance();
 };
