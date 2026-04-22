@@ -1,38 +1,38 @@
 import { db, auth } from "./firebase.js";
 import {
-doc, setDoc
+doc, setDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔐 ADMIN GUARD
-auth.onAuthStateChanged(user=>{
-  if(!user || user.email !== "jhonlouiebaid92@gmail.com"){
-    alert("Access Denied");
-    location = "dashboard.html";
-  }
-});
-
-// 🔑 CREATE KEY (MANUAL FIXED)
+// 🔑 CREATE KEY (ANTI DUPLICATE + ONE TIME USE)
 window.createKey = async ()=>{
  try{
 
-  let keyInput = document.getElementById("keyInput")?.value;
+  let keyInput = document.getElementById("keyInput")?.value.trim();
   let coinsInput = document.getElementById("coinsInput")?.value;
 
   if(!keyInput || !coinsInput){
     return alert("Fill key and coins!");
   }
 
-  await setDoc(doc(db,"keys",keyInput),{
+  const keyRef = doc(db,"keys",keyInput);
+  const existing = await getDoc(keyRef);
+
+  // 🔥 PREVENT DUPLICATE KEY
+  if(existing.exists()){
+    return alert("❌ Key already exists!");
+  }
+
+  await setDoc(keyRef,{
     coins: Number(coinsInput),
-    used:false,
+    used: false,
     created: Date.now()
   });
 
   alert("✅ Key Created: " + keyInput);
 
-  // 🔥 CLEAR INPUT (optional)
-  keyInput.value = "";
-  coinsInput.value = "";
+  // CLEAR INPUT
+  document.getElementById("keyInput").value = "";
+  document.getElementById("coinsInput").value = "";
 
  }catch(e){
   alert("Key Error: " + e.message);
