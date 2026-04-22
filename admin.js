@@ -5,12 +5,19 @@ collection, addDoc, getDocs, doc, setDoc
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ADMIN PROTECT
+
+// 🔒 ADMIN PROTECTION (ILAGAY MO DITO)
 onAuthStateChanged(auth,(user)=>{
- if(!user || user.email !== "jhonlouiebaid92@gmail.com"){
-   alert("Not admin");
-   location="index.html";
- }
+  if(!user){
+    alert("❌ Login first");
+    location="index.html";
+    return;
+  }
+
+  if(user.email !== "jhonlouiebaid92@gmail.com"){
+    alert("❌ Not admin");
+    location="dashboard.html";
+  }
 });
 
 // ADD STOCK
