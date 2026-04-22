@@ -3,82 +3,107 @@ import {
 collection, addDoc, getDocs, doc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-
-// 🔒 ADMIN PROTECTION (ILAGAY MO DITO)
-onAuthStateChanged(auth,(user)=>{
-  if(!user){
-    alert("❌ Login first");
-    location="index.html";
-    return;
-  }
-
-  if(user.email !== "jhonlouiebaid92@gmail.com"){
-    alert("❌ Not admin");
-    location="dashboard.html";
-  }
-});
-
-// ADD STOCK
-window.addStock = async ()=>{
- await addDoc(collection(db,"stocks"),{
-   game:game.value,
-   username:user.value,
-   password:pass.value,
-   used:false
- });
-};
-
-// CREATE KEY
-window.genKey = async ()=>{
- await setDoc(doc(db,"keys",newKey.value),{used:false});
-};
-
-// LOAD ALL
-async function loadAll(){
- let total=0;
- let users={};
- let stats={MLBB:0,CODM:0,Roblox:0};
-
- const logsSnap = await getDocs(collection(db,"logs"));
- logs.innerHTML="";
-
- logsSnap.forEach(d=>{
-   let x=d.data();
-
-   logs.innerHTML+=`<p>${x.email} ${x.game}</p>`;
-
-   users[x.email]=(users[x.email]||0)+1;
-   stats[x.game]++;
- });
-
- // leaderboard
- let sorted=Object.entries(users).sort((a,b)=>b[1]-a[1]);
- leaderboard.innerHTML="";
- sorted.slice(0,5).forEach(u=>{
-   leaderboard.innerHTML+=`<p>${u[0]} ${u[1]}</p>`;
- });
-
- // earnings
- const earnSnap = await getDocs(collection(db,"earnings"));
- earnSnap.forEach(d=>{
-   total+=d.data().amount||0;
- });
-
- totalEarn.innerText="₱ "+total;
-
- // stock
- const stockSnap = await getDocs(collection(db,"stocks"));
- let s={MLBB:0,CODM:0,Roblox:0};
-
- stockSnap.forEach(d=>{
-   let data=d.data();
-   if(!data.used) s[data.game]++;
- });
-
- stocks.innerHTML=`MLBB:${s.MLBB} CODM:${s.CODM} Roblox:${s.Roblox}`;
+// ================= TOAST
+function showToast(msg){
+ const el = document.getElementById("toast");
+ el.innerText = msg;
+ el.style.opacity = "1";
+ setTimeout(()=>{ el.style.opacity="0"; },2000);
 }
 
-setInterval(loadAll,5000);
-loadAll();
+// ================= ADMIN PROTECTION
+onAuthStateChanged(auth,(user)=>{
+ if(!user){
+   location="index.html";
+   return;
+ }
+
+ if(user.email !== "jhonlouiebaid92@gmail.com"){
+   alert("❌ Not authorized");
+   location="dashboard.html";
+ }
+});
+
+// ================= CREATE KEY
+window.genKey = async ()=>{
+ if(!newKey.value || !coins.value){
+   showToast("❌ Fill all fields");
+   return;
+ }
+
+ try{
+   await setDoc(doc(db,"keys",newKey.value),{
+     coins:Number(coins.value),
+     used:false
+   });
+
+   showToast("✅ Key Created");
+   loadStats();
+ }catch(e){
+   showToast("Error: "+e.message);
+ }
+};
+
+// ================= ADD STOCK
+window.addStock = async ()=>{
+ if(!user.value || !pass.value || !price.value){
+   showToast("❌ Fill all fields");
+   return;
+ }
+
+ try{
+   await addDoc(collection(db,"stocks"),{
+     game:game.value,
+     username:user.value,
+     password:pass.value,
+     price:Number(price.value),
+     used:false
+   });
+
+   showToast("✅ Stock Added");
+   loadStats();
+ }catch(e){
+   showToast("Error: "+e.message);
+ }
+};
+
+// ================= LOAD STATS
+async function loadStats(){
+ let stockCount=0;
+ let keyCount=0;
+
+ const s = await getDocs(collection(db,"stocks"));
+ s.forEach(()=> stockCount++);
+
+ const k = await getDocs(collection(db,"keys"));
+ k.forEach(()=> keyCount++);
+
+ totalStocks.innerText = "Stocks: " + stockCount;
+ totalKeys.innerText = "Keys: " + keyCount;
+}
+
+// ================= LOAD LOGS
+async function loadLogs(){
+ const q = await getDocs(collection(db,"logs"));
+ let html="";
+
+ q.forEach(d=>{
+   const x=d.data();
+   html += `<p>${x.email} | ${x.game}</p>`;
+ });
+
+ logs.innerHTML = html;
+}
+
+// ================= AUTO LOAD
+async function init(){
+ await loadStats();
+ await loadLogs();
+}
+
+init();
+setInterval(init,5000);
