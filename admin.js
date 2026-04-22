@@ -11,19 +11,28 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-// 🔑 CREATE KEY (FIXED)
+// 🔑 CREATE KEY (MANUAL FIXED)
 window.createKey = async ()=>{
  try{
 
-  let key = "ZHAO-" + Math.random().toString(36).substring(2,8).toUpperCase();
+  let keyInput = document.getElementById("keyInput")?.value;
+  let coinsInput = document.getElementById("coinsInput")?.value;
 
-  await setDoc(doc(db,"keys",key),{
-    coins: 100,
+  if(!keyInput || !coinsInput){
+    return alert("Fill key and coins!");
+  }
+
+  await setDoc(doc(db,"keys",keyInput),{
+    coins: Number(coinsInput),
     used:false,
     created: Date.now()
   });
 
-  alert("✅ Key Created: " + key);
+  alert("✅ Key Created: " + keyInput);
+
+  // 🔥 CLEAR INPUT (optional)
+  keyInput.value = "";
+  coinsInput.value = "";
 
  }catch(e){
   alert("Key Error: " + e.message);
