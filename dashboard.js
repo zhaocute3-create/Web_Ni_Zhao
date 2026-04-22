@@ -3,7 +3,16 @@ import {
 collection, getDocs, doc, getDoc, updateDoc, increment, addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// 🔥 SAFE ELEMENTS
+const balance = document.getElementById("balance");
+const shop = document.getElementById("shop");
+const loading = document.getElementById("loading");
+const popup = document.getElementById("popup");
+const key = document.getElementById("key");
+const historyDiv = document.getElementById("history");
+
 let currentUser;
+let lastBuy = 0;
 
 // 🔐 AUTH
 auth.onAuthStateChanged(user=>{
@@ -14,6 +23,7 @@ auth.onAuthStateChanged(user=>{
  currentUser = user;
  loadBalance();
  loadShop();
+ loadHistory();
 });
 
 // 💰 BALANCE
@@ -22,10 +32,10 @@ async function loadBalance(){
  balance.innerText = "Balance: " + (snap.data()?.balance || 0);
 }
 
-// 🔑 KEY SYSTEM (FIXED)
+// 🔑 KEY SYSTEM
 window.checkKey = async ()=>{
  try{
-  let k = key.value;
+  let k = key.value.trim();
 
   const ref = doc(db,"keys",k);
   const snap = await getDoc(ref);
@@ -47,7 +57,7 @@ window.checkKey = async ()=>{
  }
 };
 
-// 🛒 LOAD SHOP (FIX IMAGE)
+// 🛒 LOAD SHOP
 window.loadShop = async ()=>{
  let keyword = document.getElementById("search")?.value?.toLowerCase() || "";
 
@@ -63,9 +73,9 @@ window.loadShop = async ()=>{
    html += `
    <div class="card">
 
-   ${x.image && x.image.startsWith("data:image") 
-  ? `<img src="${x.image}" width="100%" style="border-radius:10px;">`
-  : `<img src="https://via.placeholder.com/300x150?text=No+Image" width="100%" style="border-radius:10px;">`
+   ${x.image 
+     ? `<img src="${x.image}" width="100%" style="border-radius:10px;">`
+     : `<img src="https://via.placeholder.com/300x150?text=No+Image" width="100%" style="border-radius:10px;">`
    }
 
    <h3>${x.game}</h3>
@@ -82,11 +92,17 @@ window.loadShop = async ()=>{
  shop.innerHTML = html;
 };
 
-// 💸 BUY SYSTEM (FULL FIX)
+// 💸 BUY SYSTEM (ULTRA FIX)
 window.buy = async(id)=>{
  try{
 
-  loading.style.display="block";
+  // 🔐 anti spam
+  if(Date.now() - lastBuy < 3000){
+    return alert("Wait before buying again");
+  }
+  lastBuy = Date.now();
+
+  loading.style.display="flex";
 
   const userRef = doc(db,"users",currentUser.uid);
   const userSnap = await getDoc(userRef);
@@ -94,7 +110,18 @@ window.buy = async(id)=>{
 
   const stockRef = doc(db,"stocks",id);
   const stockSnap = await getDoc(stockRef);
+
+  if(!stockSnap.exists()){
+    loading.style.display="none";
+    return alert("Item not found");
+  }
+
   let data = stockSnap.data();
+
+  if(data.used){
+    loading.style.display="none";
+    return alert("Already sold");
+  }
 
   if(bal < data.price){
     loading.style.display="none";
@@ -128,9 +155,34 @@ window.buy = async(id)=>{
 
   loadBalance();
   loadShop();
+  loadHistory();
 
  }catch(e){
   loading.style.display="none";
   alert(e.message);
  }
 };
+
+// 🧾 HISTORY
+async function loadHistory(){
+ const q = await getDocs(collection(db,"purchases"));
+ let html = "";
+
+ q.forEach(d=>{
+  let x = d.data();
+
+  if(x.user !== currentUser.email) return;
+
+  html += `
+  <div class="card">
+    <p>🎮 ${x.account}</p>
+    <p>💰 ${x.price}</p>
+    <p>📅 ${new Date(x.date).toLocaleString()}</p>
+  </div>
+  `;
+ });
+
+ if(historyDiv){
+   historyDiv.innerHTML = html;
+ }
+}
