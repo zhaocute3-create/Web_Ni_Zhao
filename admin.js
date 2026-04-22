@@ -79,14 +79,18 @@ window.addStock = async ()=>{
   }
 
   await setDoc(doc(db,"stocks",id),{
-    game: game,
-    username: username,
-    password: password,
-    price: Number(price),
-    image: image,
+  game: game,
+  username: username,
+  password: password,
+  price: Number(price),
 
-    inactive: inactive || "N/A",
-    bind: bind || "Unknown",
+  inactive: inactive || "N/A",
+  bind: bind || "Unknown",
+  image: image || "",
+
+  // 🔥 NEW
+  stock: 0, // default 1 (pwede mo palitan later)
+});
 
     // 🔥 FIX IMAGE
     image: image?.startsWith("http") ? image : "",
