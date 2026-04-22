@@ -1,9 +1,10 @@
+// firebase.js (FINAL FIXED)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyATT-pyHuOBD9_lD9ee9i0XR0H6YHFJXrI",
+  apiKey: "PASTE_MO_BAGO_API_KEY",
   authDomain: "webnizhao.firebaseapp.com",
   projectId: "webnizhao",
   storageBucket: "webnizhao.appspot.com",
