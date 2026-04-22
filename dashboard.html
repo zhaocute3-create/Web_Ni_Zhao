@@ -1,31 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+<body style="background:#0b1220;color:white;text-align:center;">
 
-<div class="card">
 <h2>Dashboard</h2>
 
+<input id="key" placeholder="Enter Key"><br>
+<button onclick="checkKey()">Check Key</button>
+
+<div id="genBox" style="display:none;">
 <select id="game">
 <option>MLBB</option>
 <option>CODM</option>
 <option>Roblox</option>
 </select><br>
 
-<input id="key" placeholder="Access Key"><br>
-
-<button onclick="checkKey()">Access Key</button>
-
-<div id="genBox" style="display:none;">
-<button onclick="generate()">GENERATE ACCOUNT</button>
+<button onclick="generate()">Generate</button>
 </div>
 
 <p id="result"></p>
-</div>
-
-<div id="toast"></div>
+<p id="toast"></p>
 
 <script type="module" src="dashboard.js"></script>
 </body>
